@@ -37,6 +37,7 @@ public class CharacterMovementGroundInputHandler : CharacterMovementInputHandler
 
         if (!characterMovement.IsGrounded())
         {
+            characterInput.JumpUpAnimation();
             return characterInput.OnAirInputHandler;
         }
 

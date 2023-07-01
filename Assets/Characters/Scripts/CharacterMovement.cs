@@ -45,7 +45,7 @@ public class CharacterMovement : MonoBehaviour,IPunObservable
         if (localMovement.y > 0 || !characterController.isGrounded)
             localMovement.y -= GRAVITY * deltaTime;
         else
-            localMovement.y = -GRAVITY;
+            localMovement.y = -GRAVITY * 0.25F;
 
         // Only run in forward motion
         if (RunningInput && localMovement.z > 0)

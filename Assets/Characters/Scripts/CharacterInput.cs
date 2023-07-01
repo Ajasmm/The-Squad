@@ -72,7 +72,16 @@ public class CharacterInput : MonoBehaviour
     {
         photonView.RPC("JumpDownRPC", RpcTarget.All);
     }
+    public void JumpUpAnimation()
+    {
+        photonView.RPC("JumpUpAnimationOnlyRPC", RpcTarget.All);
+    }
 
+    [PunRPC]
+    private void JumpDownRPC()
+    {
+        characterAnimation.JumpDown();
+    }
     [PunRPC]
     private void JumpUpRPC()
     {
@@ -80,8 +89,8 @@ public class CharacterInput : MonoBehaviour
         characterAnimation.JumpUp();
     }
     [PunRPC]
-    private void JumpDownRPC()
+    private void JumpUpAnimationOnlyRPC()
     {
-        characterAnimation.JumpDown();
+        characterAnimation.JumpUp();
     }
 }
