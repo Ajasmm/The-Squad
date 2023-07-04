@@ -2,6 +2,7 @@ using Photon.Pun;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using UnityEngine.ProBuilder.MeshOperations;
 
 [RequireComponent(typeof(PhotonView))]
 public class CharacterInput : MonoBehaviour
@@ -25,6 +26,14 @@ public class CharacterInput : MonoBehaviour
     public CharacterMovementGroundInputHandler OnGroundInputHandler { get; private set; }
     public CharacterMovementAirInputHandler OnAirInputHandler { get; private set; }
 
+
+    WeaponInputHandler weaponInputHandler;
+
+    public IdleWeapon IdleWeapon { get; private set; }
+    public FiringWeapon FiringWeapon { get; private set; }
+    public ReloadWeapon ReloadWeapon { get; private set; }
+
+
     bool Firing = false;
 
     private void OnEnable()
@@ -45,11 +54,20 @@ public class CharacterInput : MonoBehaviour
         input.Gameplay.Run.canceled += Run;
         input.Gameplay.Shooting.performed += Shoot;
         input.Gameplay.Shooting.canceled += Shoot;
+        input.Gameplay.Reload.performed += Reload;
 
         OnGroundInputHandler = new CharacterMovementGroundInputHandler(characterMovement, characterAnimation, this, input, mouseSencitivity);
         OnAirInputHandler = new CharacterMovementAirInputHandler(characterMovement, characterAnimation, this, input, mouseSencitivity);
+
+        IdleWeapon = new IdleWeapon(characterAim, this);
+        FiringWeapon = new FiringWeapon(characterAim, this);
+        ReloadWeapon = new ReloadWeapon(characterAim, this);
+
         movementInputHandler = OnGroundInputHandler;
+        weaponInputHandler = IdleWeapon;
     }
+
+
     private void OnDisable()
     {
         if(input != null)
@@ -59,6 +77,7 @@ public class CharacterInput : MonoBehaviour
             input.Gameplay.Run.canceled -= Run;
             input.Gameplay.Shooting.performed -= Shoot;
             input.Gameplay.Shooting.canceled -= Shoot;
+            input.Gameplay.Reload.performed -= Reload;
         }
     }
     private void Update()
@@ -67,13 +86,7 @@ public class CharacterInput : MonoBehaviour
             return;
 
         movementInputHandler = movementInputHandler.HandleInput();
-        characterAim.Firing = Firing;
-        if (Firing)
-            characterAim.TargetAimRigWeight = 1;
-        else
-            characterAim.TargetAimRigWeight = 0;
-
-        characterAim.TargetPos = characterAim.FindTargetPos();
+        weaponInputHandler = weaponInputHandler.HandleInput();
     }
 
 
@@ -87,7 +100,11 @@ public class CharacterInput : MonoBehaviour
     }
     private void Shoot(InputAction.CallbackContext context)
     {
-        Firing = context.phase == InputActionPhase.Performed;
+        weaponInputHandler = weaponInputHandler.Fire(context.phase == InputActionPhase.Performed);
+    }
+    private void Reload(InputAction.CallbackContext context)
+    {
+        weaponInputHandler = weaponInputHandler.Reload();
     }
 
 
@@ -103,6 +120,18 @@ public class CharacterInput : MonoBehaviour
     public void JumpUpAnimation()
     {
         photonView.RPC("JumpUpAnimationOnlyRPC", RpcTarget.All);
+    }
+    public void Reload()
+    {
+        photonView.RPC("ReloadAnimationOnlyRPC", RpcTarget.All);
+    }
+    public void ReloadAnimationFinished()
+    {
+        if (!photonView.IsMine) return;
+
+        weaponInputHandler = input.Gameplay.Shooting.phase == InputActionPhase.Performed ? FiringWeapon : IdleWeapon;
+        weaponInputHandler.HandleInput();
+        characterAim.ReloadFinished();
     }
 
     [PunRPC]
@@ -121,4 +150,10 @@ public class CharacterInput : MonoBehaviour
     {
         characterAnimation.JumpUp();
     }
+    [PunRPC]
+    private void ReloadAnimationOnlyRPC()
+    {
+        characterAim.Reload();
+    }
+
 }

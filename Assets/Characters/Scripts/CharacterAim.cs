@@ -1,5 +1,5 @@
 using Photon.Pun;
-using System;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 using UnityEngine.Playables;
@@ -9,7 +9,9 @@ public class CharacterAim : MonoBehaviour,IPunObservable
     [Header("Animation and Rigging")]
     [SerializeField] Animator animator;
     [SerializeField] string Firing_ParameterName = "Firing";
+    [SerializeField] string Reload_ParameterName = "Reload";
     [SerializeField] Rig AimRig;
+    [SerializeField] Rig HoldRig;
     [SerializeField] Transform aimTarger;
 
     [Space(10), Header("Shooting")]
@@ -22,18 +24,22 @@ public class CharacterAim : MonoBehaviour,IPunObservable
 
     Transform mainCamera_T;
 
+    RaycastHit hit = new RaycastHit();
     public Vector3 TargetPos;
     public float TargetAimRigWeight;
+    public float TargetHoldRigWeight;
     public bool Firing = false;
 
     private bool preFireState = false;
 
     private int FiringHash;
+    private int ReloadHash;
 
     private void Start()
     {
         mainCamera_T = Camera.main.transform;
         FiringHash = Animator.StringToHash(Firing_ParameterName);
+        ReloadHash = Animator.StringToHash(Reload_ParameterName);
         animator.SetBool(FiringHash, false);
     }
 
@@ -42,8 +48,9 @@ public class CharacterAim : MonoBehaviour,IPunObservable
         float deltaTime = Time.deltaTime;
         aimTarger.position = TargetPos;
         AimRig.weight = Mathf.MoveTowards(AimRig.weight, TargetAimRigWeight, deltaTime * 4);
+        HoldRig.weight = Mathf.MoveTowards(HoldRig.weight, TargetHoldRigWeight, deltaTime * 4);
 
-        if(preFireState != Firing)
+        if (preFireState != Firing)
         {
             animator.SetBool(FiringHash, Firing);
             preFireState = Firing;
@@ -59,12 +66,14 @@ public class CharacterAim : MonoBehaviour,IPunObservable
         if (mainCamera_T == null)
             return NotHitPos;
 
-        RaycastHit hitInfo;
-        if (Physics.Raycast(mainCamera_T.position, mainCamera_T.forward, out hitInfo, Mathf.Infinity, layerMask.value))
-                return hitInfo.point;
-        else
-            return NotHitPos;
+        return Fire(out hit) ? hit.point : NotHitPos;
     }
+
+    private bool Fire(out RaycastHit hit)
+    {
+        return Physics.Raycast(mainCamera_T.position, mainCamera_T.forward, out hit, Mathf.Infinity, layerMask.value);
+    }
+    
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
@@ -81,98 +90,37 @@ public class CharacterAim : MonoBehaviour,IPunObservable
             TargetAimRigWeight = (float) stream.ReceiveNext();
         }
     }
-}
-
-public class Gun : MonoBehaviour
-{
-    [SerializeField] GunInfo gunInfo;
-    [SerializeField] ParticleSystem muzleFlash;
-    [SerializeField] AudioSource shootSound;
-
-    #region BulletInventory
-    private int bulletInMag = 30;
-    private int bulletInHand = 250;
-    #endregion
-
-    private void Start()
-    {
-        UpdateBulletInfo();
-    }
-
-    public bool PeekShoot() => bulletInMag > 0;
-    public bool PeekReload()
-    {
-        if (bulletInHand == 0)
-            return false;
-
-        return true;
-    }
-
-    public bool Shoot()
-    {
-        if(bulletInMag == 0)
-            return false;
-
-        bulletInMag--;
-
-        if(muzleFlash) 
-            muzleFlash.Play();
-
-        if(shootSound) 
-            shootSound.Play();
-        
-        return true;
-    }
     public void Reload()
     {
-        if(bulletInHand == 0)
+        animator.SetTrigger(ReloadHash);
+    }    
+    public void Fire_Animation(AnimationEvent eventData)
+    {
+        if (!photonView.IsMine)
             return;
 
-        int requiredBullets = 30 - bulletInMag;
-        int GottenBullets = (bulletInHand >= requiredBullets) ? requiredBullets : bulletInHand;
-        bulletInMag += GottenBullets;
-        bulletInHand -= GottenBullets;
-    }
+        if (eventData.animatorClipInfo.weight < 1)
+            return;
 
-    private void UpdateBulletInfo()
-    {
-        gunInfo.BulletInMag = bulletInMag;
-        gunInfo.BulletInHand = bulletInHand;
-    }
-}
-
-public class GunInfo : ScriptableObject
-{
-    public int BulletInMag
-    {
-        set 
-        { 
-            bulletInMag = value;
-            OnValueChange.Invoke(bulletInMag, bulletInHand);
-        }
-    }
-    public int BulletInHand
-    {
-        set
+        if (gun.PeekShoot())
         {
-            bulletInHand = value;
-            OnValueChange.Invoke(bulletInMag, bulletInHand);
+            RaycastHit hit;
+            if (Fire(out hit))
+            {
+                // get the health component from the hitted object and do call the PUNRPC function
+                CharacterHealth characterHealth;
+                if(hit.collider.gameObject.TryGetComponent(out characterHealth))
+                {
+                    characterHealth.AddDamage(100, photonView.Owner);
+                }
+
+                gun.Shoot();
+            }
         }
     }
-
-    private int bulletInMag;
-    private int bulletInHand;
-
-    Action<int, int> OnValueChange;
-
+    public void ReloadFinished()
+    {
+        gun.Reload();
+    }
     
-    public void AddChangeListener(Action<int, int> listener)
-    {
-        listener(bulletInMag, bulletInHand);
-        OnValueChange += listener;
-    }
-    public void RemoveChangeListener(Action<int, int> listener)
-    {
-        OnValueChange -= listener;
-    }
 }

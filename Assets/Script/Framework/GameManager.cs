@@ -3,7 +3,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public GameInput gameInput;
-
+    public LevelManager levelManager;
 
     #region Sigleton
     public static GameManager Instance { get { return GetGameManagerInstance(); } }

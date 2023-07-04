@@ -1,11 +1,13 @@
 using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] GameObject defaultPlayer;
+    [SerializeField] GameObject gameOverWindow;
+
+    public int Score { get { return score; } }
+    int score = 0;
 
     string playerName;
 
@@ -15,10 +17,21 @@ public class LevelManager : MonoBehaviourPunCallbacks
         Destroy(defaultPlayer);
         if (PhotonNetwork.InRoom)
             PhotonNetwork.Instantiate(playerName, transform.position, transform.rotation);
+
+        GameManager.Instance.levelManager = this;
     }
 
     public override void OnJoinedRoom()
     {
         PhotonNetwork.Instantiate(playerName, transform.position, transform.rotation);
+    }
+    public void AddScore(int score)
+    {
+        this.score += score;
+    }
+    public void GameOver()
+    {
+        PhotonNetwork.LeaveRoom();
+        // enable the gameover window
     }
 }
