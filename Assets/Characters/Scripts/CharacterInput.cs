@@ -9,10 +9,14 @@ public class CharacterInput : MonoBehaviour
     [Header("Component References")]
     [SerializeField] CharacterMovement characterMovement;
     [SerializeField] CharacterAnimation characterAnimation;
+    [SerializeField] CharacterAim characterAim;
     [SerializeField] PhotonView photonView;
 
-    [Header("Parameters")]
+    [Space(10), Header("Parameters")]
     [SerializeField] float mouseSencitivity = 1;
+
+    [Space(10), Header("Other")]
+    [SerializeField] GameObject virtualCamera;
 
     GameInput input;
 
@@ -21,12 +25,15 @@ public class CharacterInput : MonoBehaviour
     public CharacterMovementGroundInputHandler OnGroundInputHandler { get; private set; }
     public CharacterMovementAirInputHandler OnAirInputHandler { get; private set; }
 
-    
+    bool Firing = false;
 
     private void OnEnable()
     {
         if (!photonView.IsMine)
+        {
+            virtualCamera.SetActive(false);
             return;
+        }
 
         NetworkManager.Instance.ActivateOfflineMode();
 
@@ -36,6 +43,8 @@ public class CharacterInput : MonoBehaviour
         input.Gameplay.Jump.performed += Jump;
         input.Gameplay.Run.performed += Run;
         input.Gameplay.Run.canceled += Run;
+        input.Gameplay.Shooting.performed += Shoot;
+        input.Gameplay.Shooting.canceled += Shoot;
 
         OnGroundInputHandler = new CharacterMovementGroundInputHandler(characterMovement, characterAnimation, this, input, mouseSencitivity);
         OnAirInputHandler = new CharacterMovementAirInputHandler(characterMovement, characterAnimation, this, input, mouseSencitivity);
@@ -48,11 +57,23 @@ public class CharacterInput : MonoBehaviour
             input.Gameplay.Jump.performed -= Jump;
             input.Gameplay.Run.performed -= Run;
             input.Gameplay.Run.canceled -= Run;
+            input.Gameplay.Shooting.performed -= Shoot;
+            input.Gameplay.Shooting.canceled -= Shoot;
         }
     }
     private void Update()
     {
+        if (!photonView.IsMine)
+            return;
+
         movementInputHandler = movementInputHandler.HandleInput();
+        characterAim.Firing = Firing;
+        if (Firing)
+            characterAim.TargetAimRigWeight = 1;
+        else
+            characterAim.TargetAimRigWeight = 0;
+
+        characterAim.TargetPos = characterAim.FindTargetPos();
     }
 
 
@@ -64,6 +85,13 @@ public class CharacterInput : MonoBehaviour
     {
         movementInputHandler.Run(context);
     }
+    private void Shoot(InputAction.CallbackContext context)
+    {
+        Firing = context.phase == InputActionPhase.Performed;
+    }
+
+
+
     public void JumpUp()
     { 
         photonView.RPC("JumpUpRPC", RpcTarget.All);
