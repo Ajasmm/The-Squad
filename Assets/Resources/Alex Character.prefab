@@ -2371,6 +2371,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Health: 500
+  healthInfo: {fileID: 11400000, guid: c7c0b1f7c0fd3a841b32257995481903, type: 2}
   photonView: {fileID: 3782764613775550784}
 --- !u!114 &1261896233957836574
 MonoBehaviour:

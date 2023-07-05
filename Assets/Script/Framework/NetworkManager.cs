@@ -1,9 +1,11 @@
 using Photon.Pun;
 using Photon.Realtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Rendering;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
@@ -26,8 +28,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
+    Dictionary<string, RoomInfo> RoomList = new Dictionary<string, RoomInfo>();
+    public Action<Dictionary<string, RoomInfo>> RoomListUpdated;
+
+
     #region UnityMagic Functions
-    private void Start()
+    private void Start()    
     {
         if (instance == null)
         {
@@ -38,9 +44,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             Destroy(gameObject);
         }
-
-        PhotonNetwork.AddCallbackTarget(this);
-        ActivateOfflineMode();
     }
     private void OnDestroy()
     {
@@ -49,20 +52,57 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
-
-    public void ActivateOfflineMode()
+    public void Connect()
     {
-        PhotonNetwork.OfflineMode = true;
+        PhotonNetwork.ConnectUsingSettings();
     }
 
     public override void OnConnectedToMaster()
     {
-        Debug.Log("Connected to master");
-        PhotonNetwork.JoinRandomOrCreateRoom();
+        Debug.Log("Connected to Master");
+        RoomList.Clear();
+        RoomListUpdated?.Invoke(RoomList);
+        PhotonNetwork.JoinLobby();
+        
+    }
+    public override void OnRegionListReceived(RegionHandler regionHandler)
+    {
+        Debug.Log($"regions : {regionHandler.BestRegion.Code}");
+    }
+    public override void OnJoinedLobby()
+    {
+        Debug.Log($"Region connected : {PhotonNetwork.CloudRegion}");
+        Debug.Log("Connected to Lobby");
     }
     public override void OnJoinedRoom()
     {
         Debug.Log("Connected to room");
+    }
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    {
+        foreach(RoomInfo roomInfo in roomList)
+        {
+            if (roomInfo.RemovedFromList)
+            {
+                if(RoomList.ContainsKey(roomInfo.Name))
+                    RoomList.Remove(roomInfo.Name);
+            }
+            RoomList.Add(roomInfo.Name, roomInfo);
+        }
+
+        RoomListUpdated?.Invoke(RoomList);
+    }
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        Debug.Log($"Disconncted. Cause {cause}");
+
+        if (cause != DisconnectCause.DisconnectByClientLogic && cause != DisconnectCause.ApplicationQuit)
+        {
+            if (PhotonNetwork.InRoom)
+                 PhotonNetwork.ReconnectAndRejoin();
+            else
+                PhotonNetwork.Reconnect();
+        }
     }
 
 }

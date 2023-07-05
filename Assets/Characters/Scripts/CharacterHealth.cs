@@ -5,7 +5,13 @@ using UnityEngine;
 public class CharacterHealth : MonoBehaviour
 {
     [SerializeField] int Health;
+    [SerializeField] HealthInfo healthInfo;
     [SerializeField] PhotonView photonView;
+
+    private void Start()
+    {
+        healthInfo.InitHealthInfo(Health, Health);
+    }
 
     public void AddDamage(int damage, Player shooterPlayer)
     {
@@ -28,5 +34,4 @@ public class CharacterHealth : MonoBehaviour
     {
         GameManager.Instance.levelManager.AddScore(100);
     }
-    
 }

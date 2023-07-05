@@ -33,9 +33,6 @@ public class CharacterInput : MonoBehaviour
     public FiringWeapon FiringWeapon { get; private set; }
     public ReloadWeapon ReloadWeapon { get; private set; }
 
-
-    bool Firing = false;
-
     private void OnEnable()
     {
         if (!photonView.IsMine)
@@ -43,8 +40,6 @@ public class CharacterInput : MonoBehaviour
             virtualCamera.SetActive(false);
             return;
         }
-
-        NetworkManager.Instance.ActivateOfflineMode();
 
         input = GameManager.Instance.gameInput;
         input.Gameplay.Enable();
