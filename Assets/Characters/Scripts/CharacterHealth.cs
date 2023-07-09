@@ -5,12 +5,15 @@ using UnityEngine;
 public class CharacterHealth : MonoBehaviour
 {
     [SerializeField] int Health;
-    [SerializeField] HealthInfo healthInfo;
+    [SerializeField] bool IsNPC = false;
     [SerializeField] PhotonView photonView;
+
+    [Header("Only for Player")]
+    [SerializeField] HealthInfo healthInfo;
 
     private void Start()
     {
-        healthInfo.InitHealthInfo(Health, Health);
+        healthInfo?.InitHealthInfo(Health, Health);
     }
 
     public void AddDamage(int damage, Player shooterPlayer)
@@ -26,7 +29,11 @@ public class CharacterHealth : MonoBehaviour
         {
             Health = 0;
             photonView.RPC("AddScore", shootedPlayer);
-            GameManager.Instance.levelManager.GameOver();
+
+            if (IsNPC)
+                PhotonNetwork.Destroy(gameObject);
+            else
+                GameManager.Instance.levelManager.GameOver();
         }
     }
     [PunRPC]

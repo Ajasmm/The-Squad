@@ -1,11 +1,7 @@
 using Photon.Pun;
 using Photon.Realtime;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.Rendering;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
@@ -28,8 +24,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
-    Dictionary<string, RoomInfo> RoomList = new Dictionary<string, RoomInfo>();
-    public Action<Dictionary<string, RoomInfo>> RoomListUpdated;
+    public SyncValue<Dictionary<string, RoomInfo>> RoomList_Value = new SyncValue<Dictionary<string, RoomInfo>>();
+
 
 
     #region UnityMagic Functions
@@ -44,6 +40,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             Destroy(gameObject);
         }
+
+        RoomList_Value.Value = new Dictionary<string, RoomInfo>();
     }
     private void OnDestroy()
     {
@@ -60,8 +58,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log("Connected to Master");
-        RoomList.Clear();
-        RoomListUpdated?.Invoke(RoomList);
+
+        RoomList_Value.Value.Clear();
+        RoomList_Value.Invoke();
+
         PhotonNetwork.JoinLobby();
         
     }
@@ -80,17 +80,23 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        foreach(RoomInfo roomInfo in roomList)
+        foreach (RoomInfo roomInfo in roomList)
         {
             if (roomInfo.RemovedFromList)
             {
-                if(RoomList.ContainsKey(roomInfo.Name))
-                    RoomList.Remove(roomInfo.Name);
+                if (RoomList_Value.Value.ContainsKey(roomInfo.Name))
+                    RoomList_Value.Value.Remove(roomInfo.Name);
             }
-            RoomList.Add(roomInfo.Name, roomInfo);
+            else
+            {
+                if (RoomList_Value.Value.ContainsKey(roomInfo.Name))
+                    RoomList_Value.Value[roomInfo.Name] = roomInfo;
+                else
+                    RoomList_Value.Value.TryAdd(roomInfo.Name, roomInfo);
+            }
         }
 
-        RoomListUpdated?.Invoke(RoomList);
+        RoomList_Value.Invoke();
     }
     public override void OnDisconnected(DisconnectCause cause)
     {

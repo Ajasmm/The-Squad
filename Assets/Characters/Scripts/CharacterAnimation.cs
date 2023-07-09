@@ -1,10 +1,9 @@
 ﻿using Photon.Pun;
-using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent (typeof(Animator))]
-[RequireComponent (typeof(PhotonView))]
-public class CharacterAnimation : MonoBehaviour,IPunObservable
+[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(PhotonView))]
+public class CharacterAnimation : MonoBehaviour, IPunObservable
 {
     [Header("Parameters")]
     [SerializeField] string ForwardParameter_Name = "Forward";
@@ -63,9 +62,9 @@ public class CharacterAnimation : MonoBehaviour,IPunObservable
         }
         else
         {
-            ForwardInput = (float) stream.ReceiveNext();
-            SidewaysInput = (float) stream.ReceiveNext();
-            RunningInput = (bool) stream.ReceiveNext();
+            ForwardInput = (float)stream.ReceiveNext();
+            SidewaysInput = (float)stream.ReceiveNext();
+            RunningInput = (bool)stream.ReceiveNext();
         }
     }
 }

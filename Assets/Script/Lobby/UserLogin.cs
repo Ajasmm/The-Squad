@@ -1,29 +1,29 @@
 using Photon.Pun;
+using Photon.Realtime;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class UserLogin : MonoBehaviour
+public class UserLogin : MonoBehaviourPunCallbacks
 {
     [SerializeField] TMP_InputField NickName;
     [SerializeField] Button LogIn_Btn;
 
     const string nickNameKey = "NickName";
 
-    private void OnEnable()
-    {
-        LogIn_Btn.onClick.AddListener(OnLogin);
-    }
-    private void OnDisable()
-    {
-        LogIn_Btn.onClick.RemoveListener(OnLogin);
-    }
 
 
     private void Start()
     {
         if (PlayerPrefs.HasKey(nickNameKey))
             NickName.text = PlayerPrefs.GetString(nickNameKey);
+
+        LogIn_Btn.onClick.AddListener(OnLogin);
+    }
+    private void OnDestroy()
+    {
+        LogIn_Btn.onClick.RemoveListener(OnLogin);
     }
 
     public void OnLogin()
@@ -36,6 +36,16 @@ public class UserLogin : MonoBehaviour
         PlayerPrefs.Save();
 
         NetworkManager.Instance.Connect();
-        // load to lobby
+        LogIn_Btn.interactable = false;
     }
+
+    public override void OnConnectedToMaster()
+    {
+        SceneManager.LoadSceneAsync("MainMenu");
+    }
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        LogIn_Btn.interactable = true;
+    }
+
 }

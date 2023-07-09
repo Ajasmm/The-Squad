@@ -1779,6 +1779,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 17c087bd322c5e14c9ae16b51759b089, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 1082271958561512970, guid: 17c087bd322c5e14c9ae16b51759b089, type: 3}
       propertyPath: m_Layer
       value: 10
@@ -1943,6 +1947,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 17c087bd322c5e14c9ae16b51759b089, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3583763176855633698}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 17c087bd322c5e14c9ae16b51759b089, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -8742453783449963747}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 17c087bd322c5e14c9ae16b51759b089, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1261896233957836574}
@@ -2268,6 +2275,7 @@ MonoBehaviour:
   - {fileID: 1057228266981275735}
   - {fileID: -2138211330387166691}
   - {fileID: 3055104270727914958}
+  - {fileID: -8742453783449963747}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -2373,6 +2381,22 @@ MonoBehaviour:
   Health: 500
   healthInfo: {fileID: 11400000, guid: c7c0b1f7c0fd3a841b32257995481903, type: 2}
   photonView: {fileID: 3782764613775550784}
+--- !u!114 &-8742453783449963747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8276345834838440870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!114 &1261896233957836574
 MonoBehaviour:
   m_ObjectHideFlags: 0

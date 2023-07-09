@@ -1,8 +1,6 @@
 using Photon.Pun;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
-using UnityEngine.Playables;
 
 public class CharacterAim : MonoBehaviour,IPunObservable
 {
@@ -82,12 +80,14 @@ public class CharacterAim : MonoBehaviour,IPunObservable
             stream.SendNext(Firing);
             stream.SendNext(TargetPos);
             stream.SendNext(TargetAimRigWeight);
+            stream.SendNext(TargetHoldRigWeight);
         }
         else
         {
             Firing = (bool) stream.ReceiveNext();
             TargetPos = (Vector3) stream.ReceiveNext();
             TargetAimRigWeight = (float) stream.ReceiveNext();
+            TargetHoldRigWeight = (float) stream.ReceiveNext(); 
         }
     }
     public void Reload()
