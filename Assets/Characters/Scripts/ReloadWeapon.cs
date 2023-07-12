@@ -14,7 +14,7 @@ public class ReloadWeapon : WeaponInputHandler
     public override WeaponInputHandler HandleInput()
     {
         characterAim.TargetAimRigWeight = 0;
-        characterAim.TargetHoldRigWeight = 0;
+        characterAim.GunHoldRigWeight = 0;
 
         return this;
     }

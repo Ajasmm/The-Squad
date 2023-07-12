@@ -22,7 +22,7 @@ public class FiringWeapon : WeaponInputHandler
     public override WeaponInputHandler HandleInput()
     {
         characterAim.TargetAimRigWeight = 1;
-        characterAim.TargetHoldRigWeight = 1;
+        characterAim.GunHoldRigWeight = 1;
 
         characterAim.TargetPos = characterAim.FindTargetPos();
         return this;

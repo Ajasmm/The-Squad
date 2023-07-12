@@ -4,7 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PhotonView))]
-public class CharacterMovement : MonoBehaviour,IPunObservable
+public class CharacterMovement : MonoBehaviour, Photon.Pun.IPunObservable
 {
     [Header("Parameters")]
     [SerializeField] float WalkSpeed = 2;

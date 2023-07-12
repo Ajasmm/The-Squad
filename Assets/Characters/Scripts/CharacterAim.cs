@@ -2,7 +2,7 @@ using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
-public class CharacterAim : MonoBehaviour,IPunObservable
+public class CharacterAim : MonoBehaviour, Photon.Pun.IPunObservable
 {
     [Header("Animation and Rigging")]
     [SerializeField] Animator animator;
@@ -10,7 +10,7 @@ public class CharacterAim : MonoBehaviour,IPunObservable
     [SerializeField] string Reload_ParameterName = "Reload";
     [SerializeField] Rig AimRig;
     [SerializeField] Rig HoldRig;
-    [SerializeField] Transform aimTarger;
+    [SerializeField] Transform aimTarget;
 
     [Space(10), Header("Shooting")]
     [SerializeField] Gun gun;
@@ -23,9 +23,9 @@ public class CharacterAim : MonoBehaviour,IPunObservable
     Transform mainCamera_T;
 
     RaycastHit hit = new RaycastHit();
-    public Vector3 TargetPos;
+    public Vector3 TargetPos = Vector3.zero;
     public float TargetAimRigWeight;
-    public float TargetHoldRigWeight;
+    public float GunHoldRigWeight;
     public bool Firing = false;
 
     private bool preFireState = false;
@@ -44,9 +44,9 @@ public class CharacterAim : MonoBehaviour,IPunObservable
     private void Update()
     {
         float deltaTime = Time.deltaTime;
-        aimTarger.position = TargetPos;
+        aimTarget.position = TargetPos;
         AimRig.weight = Mathf.MoveTowards(AimRig.weight, TargetAimRigWeight, deltaTime * 4);
-        HoldRig.weight = Mathf.MoveTowards(HoldRig.weight, TargetHoldRigWeight, deltaTime * 4);
+        HoldRig.weight = Mathf.MoveTowards(HoldRig.weight, GunHoldRigWeight, deltaTime * 4);
 
         if (preFireState != Firing)
         {
@@ -80,14 +80,14 @@ public class CharacterAim : MonoBehaviour,IPunObservable
             stream.SendNext(Firing);
             stream.SendNext(TargetPos);
             stream.SendNext(TargetAimRigWeight);
-            stream.SendNext(TargetHoldRigWeight);
+            stream.SendNext(GunHoldRigWeight);
         }
         else
         {
             Firing = (bool) stream.ReceiveNext();
             TargetPos = (Vector3) stream.ReceiveNext();
             TargetAimRigWeight = (float) stream.ReceiveNext();
-            TargetHoldRigWeight = (float) stream.ReceiveNext(); 
+            GunHoldRigWeight = (float) stream.ReceiveNext(); 
         }
     }
     public void Reload()

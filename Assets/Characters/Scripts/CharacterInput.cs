@@ -1,8 +1,7 @@
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Collections.Generic;
-using UnityEngine.ProBuilder.MeshOperations;
+using ExitGames.Client.Photon;
 
 [RequireComponent(typeof(PhotonView))]
 public class CharacterInput : MonoBehaviour
@@ -61,8 +60,6 @@ public class CharacterInput : MonoBehaviour
         movementInputHandler = OnGroundInputHandler;
         weaponInputHandler = IdleWeapon;
     }
-
-
     private void OnDisable()
     {
         if(input != null)
@@ -74,6 +71,22 @@ public class CharacterInput : MonoBehaviour
             input.Gameplay.Shooting.canceled -= Shoot;
             input.Gameplay.Reload.performed -= Reload;
         }
+    }
+    private void Start()
+    {
+
+        Hashtable customProperties = new Hashtable();
+        int actorId = PhotonNetwork.LocalPlayer.ActorNumber;
+        customProperties.TryAdd(actorId.ToString(), 0);
+        PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
+
+        if (PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties))
+            Debug.LogWarning("Property set from player");
+        else
+            Debug.LogWarning("Failed to set custom property");
+
+        if (GameManager.Instance.GamePlayMode)
+            GameManager.Instance.GamePlayMode.Player = photonView.Owner;
     }
     private void Update()
     {

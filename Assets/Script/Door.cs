@@ -4,26 +4,30 @@ using UnityEngine;
 [RequireComponent(typeof(Animator), typeof(BoxCollider))]
 public class Door : MonoBehaviour
 {
+    [SerializeField] Animator animator;
     [SerializeField] string DoorStateParameter = "State";
     [SerializeField] bool defaultState = false;
 
-    Animator animator;
 
     int stateHash;
     HashSet<int> inside = new HashSet<int>();
 
-    private void Start()
+    private void OnEnable()
     {
-        animator = GetComponent<Animator>();
-
         stateHash = Animator.StringToHash(DoorStateParameter);
         animator.SetBool(DoorStateParameter, defaultState);
+
+        defaultState = true;
+        UpdateState();
+    }
+    private void OnDisable()
+    {
+        defaultState = false;
+        UpdateState();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.tag);
-
         if(other.CompareTag("Enemy") || other.CompareTag("Player"))
             inside.Add(other.gameObject.GetInstanceID());
 
@@ -31,8 +35,6 @@ public class Door : MonoBehaviour
     }
     private void OnTriggerExit(Collider other)
     {
-        Debug.Log(other.tag);
-
         if (other.CompareTag("Enemy") || other.CompareTag("Player"))
             inside.Remove(other.gameObject.GetInstanceID());
 
@@ -40,14 +42,12 @@ public class Door : MonoBehaviour
     }
     private void UpdateState()
     {
-        Debug.Log("Insider Count : " + inside.Count);
-
-        if (inside.Count > 0)
+        if(this.enabled == false)
+            defaultState = false;
+        else if (inside.Count > 0)
             defaultState = true;
         else
             defaultState = false;
-
-        Debug.Log($"State Updated to {defaultState}");
 
         animator.SetBool(stateHash, defaultState);
     }

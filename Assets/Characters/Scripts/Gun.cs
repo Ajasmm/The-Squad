@@ -7,8 +7,8 @@ public class Gun : MonoBehaviour
     [SerializeField] AudioSource shootSound;
 
     #region BulletInventory
-    private int bulletInMag = 30;
-    private int bulletInHand = 250;
+    public int bulletInMag = 30;
+    public int bulletInHand = 250;
     #endregion
 
     private void Start()
@@ -45,6 +45,7 @@ public class Gun : MonoBehaviour
 
     private void UpdateBulletInfo()
     {
+        if(gunInfo == null) return;
         gunInfo.BulletInMag = bulletInMag;
         gunInfo.BulletInHand = bulletInHand;
     }

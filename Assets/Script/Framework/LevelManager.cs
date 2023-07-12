@@ -4,34 +4,36 @@ using UnityEngine;
 public class LevelManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] GameObject defaultPlayer;
-    [SerializeField] GameObject gameOverWindow;
+    [SerializeField] GameplayMode gameplayMode;
 
     public int Score { get { return score; } }
     int score = 0;
 
     string playerName;
+    bool isInstanced = false;
 
     private void Start()
     {
         playerName = defaultPlayer.name;
         Destroy(defaultPlayer);
-        if (PhotonNetwork.InRoom)
+
+        GameManager.Instance.GamePlayMode = gameplayMode;
+
+        if (PhotonNetwork.InRoom && !isInstanced)
+        {
             PhotonNetwork.Instantiate(playerName, transform.position, transform.rotation);
+            isInstanced = true;
+        }
 
         GameManager.Instance.levelManager = this;
     }
 
     public override void OnJoinedRoom()
     {
+        if (isInstanced)
+            return;
+
         PhotonNetwork.Instantiate(playerName, transform.position, transform.rotation);
-    }
-    public void AddScore(int score)
-    {
-        this.score += score;
-    }
-    public void GameOver()
-    {
-        PhotonNetwork.LeaveRoom();
-        // enable the gameover window
+        isInstanced = true;
     }
 }

@@ -4,7 +4,16 @@ public class GameManager : MonoBehaviour
 {
     public GameInput gameInput;
     public LevelManager levelManager;
-
+    public GameplayMode GamePlayMode
+    {
+        get { return gameplayMode; }
+        set
+        {
+            gameplayMode = value;
+            gameplayMode.Initialize();
+        }
+    }
+    private GameplayMode gameplayMode;
     #region Sigleton
     public static GameManager Instance { get { return GetGameManagerInstance(); } }
     private static GameManager instance;
@@ -45,4 +54,6 @@ public class GameManager : MonoBehaviour
             isGameQuit = true;
     }
     #endregion
+
+
 }

@@ -1573,7 +1573,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 17c087bd322c5e14c9ae16b51759b089, type: 3}
       propertyPath: m_RootOrder
-      value: -1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 17c087bd322c5e14c9ae16b51759b089, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2355,16 +2355,16 @@ MonoBehaviour:
   Reload_ParameterName: Reload
   AimRig: {fileID: 6736310444286375086}
   HoldRig: {fileID: 1189670863342890359}
-  aimTarger: {fileID: 6406477134038232608}
+  aimTarget: {fileID: 6406477134038232608}
   gun: {fileID: 3100123022656094804}
   layerMask:
     serializedVersion: 2
-    m_Bits: 23
+    m_Bits: 2071
   NotHitPos: {x: 0, y: 1.5, z: 50}
   photonView: {fileID: 3782764613775550784}
   TargetPos: {x: 0, y: 0, z: 0}
   TargetAimRigWeight: 0
-  TargetHoldRigWeight: 0
+  GunHoldRigWeight: 0
   Firing: 0
 --- !u!114 &3583763176855633698
 MonoBehaviour:
@@ -2379,8 +2379,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Health: 500
-  healthInfo: {fileID: 11400000, guid: c7c0b1f7c0fd3a841b32257995481903, type: 2}
+  IsNPC: 0
   photonView: {fileID: 3782764613775550784}
+  healthInfo: {fileID: 11400000, guid: c7c0b1f7c0fd3a841b32257995481903, type: 2}
 --- !u!114 &-8742453783449963747
 MonoBehaviour:
   m_ObjectHideFlags: 0

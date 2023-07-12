@@ -24,7 +24,7 @@ public class IdleWeapon : WeaponInputHandler
     public override WeaponInputHandler HandleInput()
     {
         characterAim.TargetAimRigWeight = 0;
-        characterAim.TargetHoldRigWeight = 1;
+        characterAim.GunHoldRigWeight = 1;
 
         return this;
     }

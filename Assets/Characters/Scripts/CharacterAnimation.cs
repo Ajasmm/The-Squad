@@ -3,7 +3,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(PhotonView))]
-public class CharacterAnimation : MonoBehaviour, IPunObservable
+public class CharacterAnimation : MonoBehaviour, Photon.Pun.IPunObservable
 {
     [Header("Parameters")]
     [SerializeField] string ForwardParameter_Name = "Forward";

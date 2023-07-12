@@ -13,7 +13,14 @@ public class CharacterHealth : MonoBehaviour
 
     private void Start()
     {
-        healthInfo?.InitHealthInfo(Health, Health);
+        if (!IsNPC && photonView.IsMine)
+            healthInfo?.InitHealthInfo(Health, Health);
+
+        PhotonNetwork.AddCallbackTarget(this);
+    }
+    private void OnDestroy()
+    {
+        PhotonNetwork.RemoveCallbackTarget(this);
     }
 
     public void AddDamage(int damage, Player shooterPlayer)
@@ -26,19 +33,28 @@ public class CharacterHealth : MonoBehaviour
     {
         Health -= damage;
         if(Health < 0)
-        {
             Health = 0;
-            photonView.RPC("AddScore", shootedPlayer);
 
-            if (IsNPC)
-                PhotonNetwork.Destroy(gameObject);
+        if (photonView.IsMine)
+            healthInfo?.SetCurrentHealth(Health);
+
+        if (Health == 0)
+        {
+
+            if(IsNPC)
+            {
+                photonView.RPC("AddScore", shootedPlayer);
+            }
             else
-                GameManager.Instance.levelManager.GameOver();
+            {
+                GameManager.Instance.GamePlayMode.GameOver();
+            }
+            PhotonNetwork.Destroy(gameObject);
         }
     }
     [PunRPC]
     private void AddScore()
     {
-        GameManager.Instance.levelManager.AddScore(100);
+        GameManager.Instance.GamePlayMode.Score += 100;
     }
 }
