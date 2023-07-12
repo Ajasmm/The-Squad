@@ -681,7 +681,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4957074979441246933}
-  m_LocalRotation: {x: -0.34034374, y: 0.0051400065, z: 0.0018604663, w: 0.9402852}
+  m_LocalRotation: {x: -0.32593483, y: 0.0051766583, z: 0.0017847422, w: 0.9453764}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -973,7 +973,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6843136914466109179}
-  m_LocalRotation: {x: -0.34034374, y: 0.0051400065, z: 0.0018604663, w: 0.9402852}
+  m_LocalRotation: {x: -0.32593483, y: 0.0051766904, z: 0.0017847535, w: 0.9453764}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1125,6 +1125,7 @@ GameObject:
   - component: {fileID: 7053963846166161224}
   - component: {fileID: 8706923739775822567}
   - component: {fileID: 6329228078059423282}
+  - component: {fileID: 2261557031751951243}
   m_Layer: 10
   m_Name: FreeLook Cam
   m_TagString: Untagged
@@ -1140,7 +1141,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7593526300112631361}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.2783463, y: 0, z: -1.9805362}
+  m_LocalPosition: {x: 0.27834624, y: 0, z: -1.9805361}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1271,6 +1272,36 @@ MonoBehaviour:
   AutoEnableInputs: 1
   XYAxis: {fileID: 6109443447786219939, guid: 3f0bd810c96204b40b5d77b566f04b1c, type: 3}
   ZAxis: {fileID: 0}
+--- !u!114 &2261557031751951243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7593526300112631361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e501d18bb52cf8c40b1853ca4904654f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CollideAgainst:
+    serializedVersion: 2
+    m_Bits: 2073
+  m_IgnoreTag: 
+  m_TransparentLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_MinimumDistanceFromTarget: 0.1
+  m_AvoidObstacles: 1
+  m_DistanceLimit: 0
+  m_MinimumOcclusionTime: 0
+  m_CameraRadius: 0.1
+  m_Strategy: 1
+  m_MaximumEffort: 4
+  m_SmoothingTime: 0
+  m_Damping: 0
+  m_DampingWhenOccluded: 0
+  m_OptimalTargetDistance: 0
 --- !u!1 &7927841610577350917
 GameObject:
   m_ObjectHideFlags: 3
@@ -1295,7 +1326,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7927841610577350917}
-  m_LocalRotation: {x: -0.34725425, y: 0.005126207, z: 0.0018982539, w: 0.9377551}
+  m_LocalRotation: {x: -0.333244, y: 0.005162608, z: 0.0018247379, w: 0.9428248}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
